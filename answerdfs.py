@@ -131,6 +131,70 @@ plt.show()
 
 
 
+# UFS CODE
+import networkx as nx
+import matplotlib.pyplot as plt
+
+# Your original graph definition (unweighted, so cost = 1 for all edges)
+G = nx.Graph({
+    "Research": ["Development", "Analytics", "Innovation"],
+    "Development": ["Research", "Quality Assurance", "IT Support"],
+    "Analytics": ["Research", "Marketing", "Finance"],
+    "Innovation": ["Research", "Design", "Strategy"],
+    "Quality Assurance": ["Development", "Production"],
+    "IT Support": ["Development", "HR", "Logistics"],
+    "Finance": ["Analytics", "Procurement"],
+    "Marketing": ["Analytics", "Sales", "Design"],
+    "Design": ["Innovation", "Marketing"],
+    "Strategy": ["Innovation", "Procurement"],
+    "Procurement": ["Finance", "Strategy", "Logistics"],
+    "Production": ["Quality Assurance", "Logistics"],
+    "HR": ["IT Support", "Admin"],
+    "Admin": ["HR", "Logistics"],
+    "Logistics": ["IT Support", "Procurement", "Production", "Admin"],
+    "Sales": ["Marketing", "Customer Support"],
+    "Customer Support": ["Sales"]
+})
+
+start_node = "Research"
+goal_node = "Customer Support" # Define a target/goal node for the search
+
+# Find the shortest path (UCS with cost 1 per edge)
+try:
+    ucs_path = nx.shortest_path(G, source=start_node, target=goal_node)
+    ucs_path_length = nx.shortest_path_length(G, source=start_node, target=goal_node)
+except nx.NetworkXNoPath:
+    ucs_path = []
+    ucs_path_length = 0
+
+print(f"Start Node: {start_node}")
+print(f"Goal Node: {goal_node}")
+print("Uniform Cost Search (Shortest Path) Result:")
+print(f"Path: {' -> '.join(ucs_path)}")
+print(f"Cost (Length): {ucs_path_length}")
+
+# --- Visualization for UCS/Shortest Path ---
+pos = nx.spring_layout(G, seed=42)
+plt.figure(figsize=(10, 8))
+
+# Draw the full graph
+nx.draw(G, pos, with_labels=True, node_color='lightblue', node_size=2000, font_weight='bold', edge_color='gray')
+
+# Highlight the path nodes and edges
+if ucs_path:
+    # Highlight path nodes in orange
+    nx.draw_networkx_nodes(G, pos, nodelist=ucs_path, node_color='orange', node_size=2000)
+    
+    # Highlight path edges in red
+    path_edges = list(zip(ucs_path, ucs_path[1:]))
+    nx.draw_networkx_edges(G, pos, edgelist=path_edges, edge_color='red', width=3)
+
+plt.title(f"Uniform Cost Search (Shortest Path) from {start_node} to {goal_node}")
+plt.show()
+
+
+
+
 
 
 
