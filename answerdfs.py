@@ -368,3 +368,109 @@ shoot :-
     retract(wumpus(WumpusX,WumpusY)).            % 4. Remove the wumpus from the world
 
 '''
+
+
+
+
+''' classic bfs 
+import networkx as nx
+import matplotlib.pyplot as plt
+import queue
+import time
+
+
+# -----------------------------
+# Part 1: BFS Algorithm (Logic)
+# -----------------------------
+def bfs(graph, start):
+    visited = set()
+    q = queue.Queue()
+    q.put(start)
+    bfs_order = []
+    edges_traversed = []
+
+    while not q.empty():
+        node = q.get()
+        if node not in visited:
+            visited.add(node)
+            bfs_order.append(node)
+            for neighbor in graph.neighbors(node):
+                if neighbor not in visited:
+                    q.put(neighbor)
+                    edges_traversed.append((node, neighbor))
+    return bfs_order, edges_traversed
+
+
+# --------------------------------------
+# Part 2: Visualization (Separate Logic)
+# --------------------------------------
+def visualize_bfs(graph, bfs_order, edges_traversed):
+    pos = nx.spring_layout(graph, seed=42)
+    node_colors = {node: 'red' for node in graph.nodes()}  # initially all red
+
+    plt.ion()
+    for node in bfs_order:
+        # mark node as visited
+        node_colors[node] = 'green'
+
+        plt.clf()
+        nx.draw(
+            graph,
+            pos,
+            with_labels=True,
+            node_color=[node_colors[n] for n in graph.nodes()],
+            node_size=800,
+            font_size=14,
+            font_weight='bold'
+        )
+        plt.title(f"Visited: {node}")
+        plt.draw()
+        plt.pause(0.1)
+        time.sleep(0.8)
+
+        # highlight edges as explored
+        for edge in edges_traversed:
+            if edge[0] == node:
+                plt.clf()
+                nx.draw(
+                    graph,
+                    pos,
+                    with_labels=True,
+                    node_color=[node_colors[n] for n in graph.nodes()],
+                    edgelist=[edge],
+                    edge_color='blue',
+                    width=3,
+                    node_size=800,
+                    font_size=14,
+                    font_weight='bold'
+                )
+                plt.title(f"Exploring edge: {edge[0]} → {edge[1]}")
+                plt.draw()
+                plt.pause(0.1)
+                time.sleep(0.8)
+
+    plt.ioff()
+    plt.show()
+
+
+# -----------------------------
+# Run BFS + Visualization
+# -----------------------------
+G = nx.Graph()
+edges = [
+    ('A', 'B'), ('A', 'C'),
+    ('B', 'D'), ('B', 'E'),
+    ('C', 'F'), ('E', 'F'),
+    ('F', 'G')
+]
+G.add_edges_from(edges)
+
+start_node = 'A'
+bfs_order, edges_traversed = bfs(G, start_node)
+
+print("\n✅ BFS Traversal Path:", " → ".join(bfs_order))
+
+visualize_bfs(G, bfs_order, edges_traversed)
+
+
+'''
